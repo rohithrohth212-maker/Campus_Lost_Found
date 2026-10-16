@@ -1,0 +1,8 @@
+__pycache__/
+*.py[cod]
+.env
+.venv/
+venv/
+app_log.txt
+tunnel_log.txt
+.ipynb_checkpoints/
