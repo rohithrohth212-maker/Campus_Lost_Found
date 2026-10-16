@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Campus Lost & Found Portal</title>
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<header class="hero">
+    <div class="container">
+        <p class="eyebrow">YOUR CAMPUS COMMUNITY</p>
+        <h1>Campus Lost & Found</h1>
+        <p>Lost something? Found something? Help it find its way home.</p>
+        <a href="#report" class="hero-button">Report an Item</a>
+    </div>
+</header>
+
+<main class="container">
+    <p class="status">
+        {% if db_connected %}
+            ● Connected to MongoDB
+        {% else %}
+            ● Demo mode — database not connected
+        {% endif %}
+    </p>
+
+    {% with messages = get_flashed_messages() %}
+        {% for message in messages %}
+            <div class="notice">{{ message }}</div>
+        {% endfor %}
+    {% endwith %}
+
+    <section class="panel" id="report">
+        <h2>Report an Item</h2>
+        <p class="muted">Enter the details below.</p>
+
+        <form action="{{ url_for('add_item') }}" method="POST">
+            <div class="form-grid">
+                <label>Item name
+                    <input name="item_name" required
+                           placeholder="Blue water bottle">
+                </label>
+
+                <label>Report type
+                    <select name="item_type" required>
+                        <option value="">Choose type</option>
+                        <option value="Lost">Lost</option>
+                        <option value="Found">Found</option>
+                    </select>
+                </label>
+
+                <label>Category
+                    <select name="category" required>
+                        <option value="">Choose category</option>
+                        <option>Electronics</option>
+                        <option>Books</option>
+                        <option>ID Card</option>
+                        <option>Bottle</option>
+                        <option>Keys</option>
+                        <option>Other</option>
+                    </select>
+                </label>
+
+                <label>Location
+                    <input name="location" required
+                           placeholder="College library">
+                </label>
+
+                <label class="full">Description
+                    <textarea name="description" required rows="3"
+                              placeholder="Describe the item"></textarea>
+                </label>
+
+                <label class="full">Contact information
+                    <input name="contact" required
+                           placeholder="Use fictional details for demo">
+                </label>
+            </div>
+
+            <button type="submit">Submit Report</button>
+        </form>
+    </section>
+
+    <section class="listing">
+        <h2>Lost and Found Reports</h2>
+        <p class="muted">Search submitted reports below.</p>
+
+        <form class="search" method="GET" action="/">
+            <input type="search" name="q" value="{{ keyword }}"
+                   placeholder="Search name, category or location">
+            <button type="submit">Search</button>
+            <a href="/">Clear</a>
+        </form>
+
+        <div class="item-grid">
+            {% for item in items %}
+                <article class="item-card">
+                    <span class="tag {{ 'lost' if item.item_type == 'Lost' else 'found' }}">
+                        {{ item.item_type }}
+                    </span>
+                    <h3>{{ item.item_name }}</h3>
+                    <p><b>Category:</b> {{ item.category }}</p>
+                    <p><b>Location:</b> {{ item.location }}</p>
+                    <p>{{ item.description }}</p>
+                    <p><b>Contact:</b> {{ item.contact }}</p>
+                    <small>{{ item.created_at }}</small>
+                </article>
+            {% else %}
+                <p>No reports found.</p>
+            {% endfor %}
+        </div>
+    </section>
+
+    <footer>Campus Lost & Found Portal</footer>
+</main>
+</body>
+</html>
